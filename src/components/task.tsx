@@ -1,5 +1,4 @@
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Draggable } from "react-beautiful-dnd";
 import { ListGroupItem } from 'react-bootstrap';
 
 function Task(props: any) {
@@ -10,11 +9,11 @@ function Task(props: any) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className="my-2 rounded"
+          className="my-2 py-2 rounded"
         >
           <div className="characters-thumb">
           </div>
-          <p className="m-0">{props.name}</p>
+          <p className="m-0">{props.name} | {props.displayOrder}</p>
         </ListGroupItem>
       )}
     </Draggable>

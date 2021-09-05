@@ -1,50 +1,31 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
-import { CHARACTERS } from "./caractersData";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, ListGroup } from 'react-bootstrap';
+import { Button, ListGroup, InputGroup, FormControl, ListGroupItem } from 'react-bootstrap';
 import Task from "./components/task";
-import axios from 'axios';
-
+import { fetchData, patchData } from './axios/axios';
 
 function App() {
-  const url = "https://todoapp.microcms.io/api/v1/tasks";
-  const apiKey = "f7c56759-963c-4bfe-971d-bccf2a334220";
-  const apiWhiteKey = "77d88407-5a2c-42f0-bcff-9e40f60a1ba6";
   const [characters, updateCharacters] = useState([]);
 
-  const fetchData = async() => {
-    const result = await axios.get(url, {
-      headers: {
-        "X-API-KEY": apiKey
-      }
-    })
-    .then(res => (res.data.contents))
-    .catch((e) => {
-      if (e.response !== undefined) {
-        // e.response.dataはanyになる
-        return [{ id: null, title: null, comment: null}]
-      }
-    });
-    
+  const getTasks = async() => {
+    const result = await fetchData()
     updateCharacters(result);
   }
   
   useEffect(() => {
-    fetchData();
+    getTasks();
   }, []);
 
   function handleOnDragEnd(result: any) {
     const items = Array.from(characters);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination?.index, 0, reorderedItem);
-
+    items.forEach(async function(item:any, index) {
+      await patchData(item.id, index)
+    })
     updateCharacters(items);
-
-    // ここにaxiosで順番の更新をAPIに送信する処理を書く
-    // api key f7c56759-963c-4bfe-971d-bccf2a334220
-    // api post key 77d88407-5a2c-42f0-bcff-9e40f60a1ba6
   }
   
   function fetchDataOnClick() {
@@ -63,28 +44,49 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>めそこスタンプ</h1>
-        <Button onClick={fetchDataOnClick}>-------</Button>
-        <DragDropContext onDragEnd={handleOnDragEnd}>
-          <Droppable droppableId="characters">
-            {(provided) => (
-              <div
-                className="characters"
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-              >
-                <ListGroup>
-                  {characters?.map(({ id, title, comment }, index) => {
-                    return (
-                      <Task id={id} name={title} thumb={comment} index={index} />
-                    );
-                  })}
-                  {provided.placeholder}
-                </ListGroup>
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+        <div className="header row py-3">
+          <h1 className="col">TODOリスト</h1>
+          <div className="col">
+            <Button onClick={getTasks}>更新🔁</Button>
+          </div>
+        </div>
+        <div className="row mx-3">
+          <DragDropContext onDragEnd={handleOnDragEnd}>
+            <Droppable droppableId="characters">
+              {(provided) => (
+                <div
+                  className="characters"
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                >
+                  <ListGroup>
+                    {characters?.map(({ id, title, comment, displayOrder }, index) => {
+                      return (
+                        <Task id={id} name={title} thumb={comment} index={index} displayOrder={displayOrder} />
+                      );
+                    })}
+                    {provided.placeholder}
+                  </ListGroup>
+                </div>
+              )}
+            </Droppable>
+            <ListGroup className="characters p-2">
+              <ListGroupItem className="rounded mx-1" >
+                <InputGroup>
+                  <FormControl
+                    placeholder="Recipient's username"
+                    aria-label="Recipient's username"
+                    aria-describedby="basic-addon2"
+                  />
+                  <Button variant="outline-secondary" id="button-addon2">
+                    Add
+                  </Button>
+                </InputGroup>
+              </ListGroupItem>
+            </ListGroup>
+          </DragDropContext>
+        </div>
+
       </header>
     </div>
   );

@@ -39,11 +39,52 @@ export const fetchData = () => {
   return result
 }
 
+export const postData = (index:number, title:string) => {
+  // const current_url = [url, id].join('/');
+  const result = axios.post(url, {
+    "displayOrder": index + 1,
+    "title": title
+  }, {
+    headers: {
+      "X-WRITE-API-KEY": apiWriteKey
+    }
+  })
+  .then((res) => {
+    return res.data
+  })
+  .catch((e) => {
+    if (e.response !== undefined) {
+      return [{ id: null, title: null, comment: null}]
+    }
+  });
+
+  return result
+}
+
 export const patchData = (id:string, index:number) => {
   const current_url = [url, id].join('/');
   const result = axios.patch(current_url, {
     "displayOrder": index + 1
   }, {
+    headers: {
+      "X-WRITE-API-KEY": apiWriteKey
+    }
+  })
+  .then((res) => {
+    return res.data
+  })
+  .catch((e) => {
+    if (e.response !== undefined) {
+      return [{ id: null, title: null, comment: null}]
+    }
+  });
+
+  return result
+}
+
+export const deleteData = (id:string) => {
+  const current_url = [url, id].join('/');
+  const result = axios.delete(current_url, {
     headers: {
       "X-WRITE-API-KEY": apiWriteKey
     }

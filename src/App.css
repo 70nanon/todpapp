@@ -3,9 +3,13 @@
 }
 
 .App-header {
-  background-color: #0f182c;
+  background-color: #260b3f;
   min-height: 100vh;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+}
+
+.mainList {
+  max-width: 500px;
 }

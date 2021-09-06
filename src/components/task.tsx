@@ -12,9 +12,8 @@ function Task(props: any) {
           className="my-2 py-2 rounded"
         >
           <div className="row">
-            <div className="col-4"></div>
-            <div className="col-4">{props.name}</div>
-            <div className="col-4">
+            <div className="col-8">{props.name}</div>
+            <div className="col-2">
               <Button 
                 onClick={() => {props.deleteTask(props.id)}}
               >
